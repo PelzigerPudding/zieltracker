@@ -1,0 +1,60 @@
+{% extends "base.html.j2" %}
+
+{% block title %} Zieltracker {% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}" />
+{% endblock %}
+
+{% include '/elements/navbar.html.j2' %}
+
+<div class="container mt-4">
+    {% block content %}
+    <canvas id="goalsChart" width="400" height="200"></canvas>
+    {% endblock %}
+</div>
+
+{% block javascript %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/index.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/popups.js') }}"></script>
+
+<script>
+    fetch('{{ url_for("goals_chart_data") }}')
+        .then(response => response.json())
+        .then(data => {
+            const ctx = document.getElementById('goalsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: data.datasets
+                },
+                options: {
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Time'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Score'
+                            },
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        })
+        .catch(error => console.error('Error loading chart data:', error));
+</script>
+{% endblock %}

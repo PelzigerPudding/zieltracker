@@ -1,0 +1,95 @@
+{% extends "index.html.j2" %}
+
+{% block content %}
+<section>
+    <div class="container">
+        <h2 class="my-4">Goal Overview</h2>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Abteilung</th>
+                        <th>Aussage</th>
+                        <th>Kriterien</th>
+                        <th>Kommentar</th>
+                        <th>Zuletzt Geändert</th>
+                        <th>Änderer</th>
+                        <th>Score</th>
+                        <th>Anregung</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <form method="GET" action="{{ url_for('goal_overview') }}">
+                            <td>
+                                <select id="division_id" name="division_id" class="form-control">
+                                    <option value="">All Divisions</option>
+                                    {% for division in divisions %}
+                                    <option value="{{ division.division_id }}" {% if request.args.get('division_id') == division.division_id|string %}selected{% endif %}>{{ division.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td>
+                                <input type="text" id="description" name="description" class="form-control" value="{{ request.args.get('description', '') }}" placeholder="Description">
+                            </td>
+                            <td>
+                                <input type="text" id="criteria" name="criteria" class="form-control" value="{{ request.args.get('criteria', '') }}" placeholder="Criteria">
+                            </td>
+                            <td>
+                                <input type="text" id="comment" name="comment" class="form-control" value="{{ request.args.get('comment', '') }}" placeholder="Comment">
+                            </td>
+                            <td>
+                                <input type="date" id="start_date" name="start_date" class="form-control" value="{{ request.args.get('start_date', '') }}" placeholder="Start Date">
+                                <input type="date" id="end_date" name="end_date" class="form-control" value="{{ request.args.get('end_date', '') }}" placeholder="End Date">
+                            </td>
+                            <td>
+                                <select id="collaborator_id" name="collaborator_id" class="form-control">
+                                    <option value="">All Collaborators</option>
+                                    {% for collaborator in collaborators %}
+                                    <option value="{{ collaborator.collaborator_id }}" {% if request.args.get('collaborator_id') == collaborator.collaborator_id|string %}selected{% endif %}>{{ collaborator.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td>
+                                <select id="score_id" name="score_id" class="form-control">
+                                    <option value="">All Scores</option>
+                                    {% for score in scores %}
+                                    <option value="{{ score.score_id }}" {% if request.args.get('score_id') == score.score_id|string %}selected{% endif %}>{{ score.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td>
+                                <input type="text" id="additionalInformation" name="additionalInformation" class="form-control" value="{{ request.args.get('additionalInformation', '') }}" placeholder="Anregung">
+                            </td>
+                            <td>
+                                <button type="submit" class="btn btn-primary">Apply Filters</button>
+                            </td>
+                        </form>
+                    </tr>
+                    {% for goal in goals %}
+                    <tr>
+                        <td>{{ goal.division }}</td>
+                        <td>{{ goal.description }}</td>
+                        <td>{{ goal.criteria }}</td>
+                        <td>{{ goal.comment }}</td>
+                        <td>{{ goal.createdAt }}</td>
+                        <td>{{ goal.collaborator }}</td>
+                        <td>{{ goal.score if goal.score is not none else 'N/A' }}</td>
+                        <td>{{ goal.additionalInformation }}</td>
+                        <td>
+                            <a href="{{ url_for('edit_goal', goal_id=goal.goal_id) }}">
+                                <img src="{{ url_for('static', filename='images/edit.svg') }}" alt="Edit" width="24" height="24">
+                            </a>
+                            <a href="{{ url_for('delete_goal', goal_id=goal.goal_id) }}">
+                                <img src="{{ url_for('static', filename='images/delete.svg') }}" alt="Delete" width="24" height="24">
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}
